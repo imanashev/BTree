@@ -9,16 +9,42 @@ private:
 	BNode<ValueType> * root;
 	static const int t = 3;
 public:
-	//BTree(int _t) : t(_t), root(NULL) {};
+	//BTree(int _t) : t(_t), root(NULL) {}; ть
 	BTree() : root(NULL) {};
 	static int getT();
 	template <class ValueType> friend class BNode;
 
-	BNode<ValueType>* insert(int key, ValueType value);
+	BNode<ValueType>* insert(int key, ValueType& value);
 	BNode<ValueType>* insertNonfull(BNode<ValueType> * node, int key, ValueType value);
 	void splitNode(BNode<ValueType> * node, BNode<ValueType>* parent ,int index);
 
+	void show();
+	void showHelper(BNode<ValueType> * node);
+
 };
+
+template<class ValueType>
+void BTree<ValueType>::show()
+{
+	showHelper(root);
+}
+
+ template<class ValueType>
+ void BTree<ValueType>::showHelper(BNode<ValueType>* node)
+ {
+	 for (int i = 0; i < node->nkeys; i++)
+	 {
+		 cout << node->key[i] << " : " << (node->value[i]) << ";" << endl;
+	 }
+	 if (!node->leaf)
+	 {
+		 for (int i = 0; i < node->nkeys; i++)
+		 {
+			 showHelper(node->child[i]);
+		 }
+	 }
+
+ }
 
 template <class ValueType>
 int BTree<ValueType>::getT()
@@ -27,14 +53,14 @@ int BTree<ValueType>::getT()
 };
 
 template<class ValueType>
-BNode<ValueType>* BTree<ValueType>::insert(int key, ValueType value)
+BNode<ValueType>* BTree<ValueType>::insert(int key, ValueType& value)
 {
 	if (root == NULL)
 	{
 		root = new BNode<ValueType>;
 		root->nkeys = 1;
 		root->key[0] = key;
-		root->value[0] = value;
+		root->value[0] = &value;
 		return root;
 	}
 	if (root->nkeys == 2 * (t - 1))
@@ -59,6 +85,7 @@ BNode<ValueType>* BTree<ValueType>::insertNonfull(BNode<ValueType> * node, int k
 			node->key[i + 1] = node->key[i];
 		}
 		node->key[i + 1] = key;
+		node->value[i + 1] = &value;
 		node->nkeys++;
 	}
 	else
