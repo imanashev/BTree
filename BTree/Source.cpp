@@ -11,12 +11,12 @@ void main()
 	tree.insert(13, "dsdf");
 	tree.insert(12, "dsfdsfsd");*/
 	string a;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 7; i++)
 	{
-		a = "heldsffffffffffffffffffffffffffflo" + (char)i;
+		a = "stringa_" + to_string(i);
 		tree.insert(i, a);
 	}
-	tree.show();
+	tree.traverse();
 
 	/*BTree<int> tree1;
 	tree1.insert(11, 3);
