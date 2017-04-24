@@ -11,12 +11,14 @@ void main()
 	tree.insert(13, "dsdf");
 	tree.insert(12, "dsfdsfsd");*/
 	string a;
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < 400; i++)
 	{
 		a = "stringa_" + to_string(i);
 		tree.insert(i, a);
 	}
 	tree.traverse();
+	cout << endl;
+	cout << tree.search(120) << endl;
 
 	/*BTree<int> tree1;
 	tree1.insert(11, 3);
