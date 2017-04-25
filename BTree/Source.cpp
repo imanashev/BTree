@@ -19,7 +19,7 @@ void main()
 	tree.traverse();
 	cout << endl;
 	cout << tree.search(120) << endl;
-
+	cout << tree.getT() << endl;
 	/*BTree<int> tree1;
 	tree1.insert(11, 3);
 	tree1.insert(13, 2);
