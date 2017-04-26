@@ -7,7 +7,7 @@ class BTree
 {
 private:
 	BNode<ValueType> * root;
-	static const int t = 4;
+	static const int t = 3;
 public:
 	BTree();
 	BTree(int _t);
