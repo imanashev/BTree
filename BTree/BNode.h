@@ -17,7 +17,14 @@ private:
 	~BNode();
 	void insertNonfull(int _key, ValueType _value);
 	void splitNode(BNode<ValueType> * node, int index);
-	void traverse(int tab = 0);
+
+	//ValueType eraseSrc(int _key);
+	//void erase(BNode<ValueType> * parent, int index);
+
+	void mergeNode(BNode<ValueType> * node, int index);
+	void moveNode(BNode<ValueType> * node, int index);
+
+	void traverse();
 	ValueType search(int _key);
 
 	template <class ValueType>friend class BTree;
@@ -101,12 +108,12 @@ void BNode<ValueType>::splitNode(BNode<ValueType>* node, int index)
 	}
 	node->nkeys = BTree<ValueType>::t - 1;
 
-	for (i = nkeys; i >= index + 1; i--) //i >= 0 && i <= index + 1; i--)
+	for (i = nkeys; i >= index + 1; i--)
 	{
 		child[i + 1] = child[i];
 	}
 	child[index + 1] = z;
-	for (i = nkeys - 1; i >= index; i--) //i >= 0 && i <= index; i--)
+	for (i = nkeys - 1; i >= index; i--)
 	{
 		key[i + 1] = key[i];
 		value[i + 1] = value[i];
@@ -117,23 +124,22 @@ void BNode<ValueType>::splitNode(BNode<ValueType>* node, int index)
 }
 
 template <class ValueType>
-void BNode<ValueType>::traverse(int tab)
+void BNode<ValueType>::traverse()
 {
 	int i;
 	for (i = 0; i < nkeys; i++)
 	{
 		if (!leaf)
 		{
-			child[i]->traverse(tab + 1);
+			cout << endl << "go to child " << i;
+			child[i]->traverse();
 		}
-		for (int j = 0; j < tab; j++) cout << "	";
-		cout << "[" << key[i] << "]:" << value[i];
-		cout << endl;
+		cout << " | " << key[i] << ":" << value[i];
 	}
-
 	if (!leaf)
 	{
-		child[i]->traverse(tab + 1);
+		cout << endl << "go to child " << i;
+		child[i]->traverse();
 	}
 }
 
@@ -155,3 +161,64 @@ ValueType BNode<ValueType>::search(int _key)
 	}
 	return child[i]->search(_key);
 }
+
+
+//template<class ValueType>
+//void BNode<ValueType>::moveNode(BNode<ValueType>* parent, int index)
+//{
+//	if (parent->child[index + 1] >= BTree<ValueType>::t)
+//	{
+//
+//	}
+//	else if (parent->child[index - 1] >= BTree<ValueType>::t)
+//	{
+//
+//	}
+//}
+
+//template <class ValueType>
+//bool BNode<ValueType>::eraseSrc(int _key)
+//{
+//	int i = 0;
+//	while (i < nkeys && _key > key[i])
+//	{
+//		i++;
+//	}
+//	if (key[i] == _key)
+//	{
+//		erase();
+//		return 1 
+//	}
+//	if (leaf)
+//	{
+//		return 0;
+//	}
+//	return child[i]->erase(_key);
+//}
+//
+//template <class ValueType>
+//void BNode<ValueType>::erase(BNode<ValueType> * parent,int index)
+//{
+//	if (leaf)
+//	{
+//		if (nkeys > BTree<ValueType>::t - 1)
+//		{
+//			for (int i = index; i < nkeys - 1; i++)
+//			{
+//				key[i] = key[i + 1];
+//				value[i] = value[i + 1];
+//			}
+//			nkeys--;
+//		}
+//		else
+//		{
+//
+//		}
+//	}
+//	else
+//	{
+//
+//	}
+//
+//
+//}

@@ -16,6 +16,7 @@ public:
 	void insert(int key, ValueType& value);
 	void traverse();
 	ValueType search(int key);
+	bool erase(int key);
 	void show();
 	void showHelper(BNode<ValueType> * node);
 
@@ -86,6 +87,17 @@ ValueType BTree<ValueType>::search(int key)
 		return root->search(key);
 	}
 }
+
+//template<class ValueType>
+//ValueType BTree<ValueType>::erase(int key)
+//{
+//	if (root != NULL)
+//	{
+//		return root->erase(key);
+//	}
+//	return 0;
+//}
+
 
 template<class ValueType>
 void BTree<ValueType>::show()
