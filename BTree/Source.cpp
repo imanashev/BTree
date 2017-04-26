@@ -1,28 +1,59 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "BTree.h"
+#include <time.h>
+#define FILENAME "names.txt"
 
 using namespace std;
 
+class Student
+{
+public:
+	string name;
+	int age;
+	unsigned long long phone;
+	Student() {};
+	Student(string _name, int _age, unsigned long long _phone) : name(_name), age(_age), phone(_phone) {};
+	friend ostream& operator<<(ostream& os, const Student& st);
+};
+
+ostream& operator<<(ostream& os, const Student& st)
+{
+	os << "Name: " << st.name << ", Age: " << st.age << ", Phone: +" << st.phone;
+	return os;
+}
+
 void main()
 {
-	BTree<string> tree;
-	/*tree.insert(11, "hello");
-	tree.insert(13, "dsdf");
-	tree.insert(12, "dsfdsfsd");*/
-	string a;
-	for (int i = 0; i < 50; i++)
+	std::ifstream in(FILENAME);
+	srand(time(NULL));
+	BTree<Student> tree;
+	string name;
+
+	while (getline(in, name))
 	{
-		int j = rand() % 1000;
-		a = "stringa_" + to_string(j);
-		tree.insert(j, a);
+		Student* cur = new Student(name, 18 + rand() % 10, rand()* rand());
+		int hash = std::hash<std::string>()(name) % 1500;
+		tree.insert(hash, *cur);
 	}
 	tree.traverse();
-	cout << endl;
-	//cout << tree.search(120) << endl;
 
-	/*BTree<int> tree1;
-	tree1.insert(11, 3);
-	tree1.insert(13, 2);
-	tree1.insert(12, 4);*/
+	cout << "Enter name for search :";
+	while (getline(std::cin, name))
+	{
+		int hash = std::hash<std::string>()(name) % 1500;
+		Student value;
+		tree.search(hash, &value);
+		cout << value << endl;
+		cout << "Enter name for search :";
+	}
+	/*
+	for (int i = 0; i < 50; i++)
+	{
+	int j = rand() % 1000;
+	a = "stringa_" + to_string(j);
+	tree.insert(j, a);
+	}
+	*/
 }

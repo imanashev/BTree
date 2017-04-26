@@ -25,7 +25,7 @@ private:
 	void moveNode(BNode<ValueType> * node, int index);
 
 	void traverse(int tab = 0);
-	ValueType search(int _key);
+	bool search(int _key, ValueType* _value);
 
 	template <class ValueType>friend class BTree;
 };
@@ -145,7 +145,7 @@ void BNode<ValueType>::traverse(int tab)
 }
 
 template <class ValueType>
-ValueType BNode<ValueType>::search(int _key)
+bool BNode<ValueType>::search(int _key, ValueType* _value)
 {
 	int i = 0;
 	while (i < nkeys && _key > key[i])
@@ -154,13 +154,14 @@ ValueType BNode<ValueType>::search(int _key)
 	}
 	if (key[i] == _key)
 	{
-		return value[i];
+		*_value = value[i];
+		return 1;
 	}
 	if (leaf)
 	{
-		return "";
+		return 0;
 	}
-	return child[i]->search(_key);
+	return child[i]->search(_key, _value);
 }
 
 

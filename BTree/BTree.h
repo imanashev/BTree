@@ -15,9 +15,8 @@ public:
 
 	void insert(int key, ValueType& value);
 	void traverse();
-	ValueType search(int key);
+	bool search(int key, ValueType* _value);
 	bool erase(int key);
-	void show();
 	void showHelper(BNode<ValueType> * node);
 
 	template <class ValueType> friend class BNode;
@@ -80,12 +79,13 @@ void BTree<ValueType>::traverse()
 }
 
 template<class ValueType>
-ValueType BTree<ValueType>::search(int key)
+bool BTree<ValueType>::search(int key, ValueType* _value)
 {
 	if (root != NULL)
 	{
-		return root->search(key);
+		return root->search(key , _value);
 	}
+	return 0;
 }
 
 //template<class ValueType>
@@ -98,27 +98,3 @@ ValueType BTree<ValueType>::search(int key)
 //	return 0;
 //}
 
-
-template<class ValueType>
-void BTree<ValueType>::show()
-{
-	showHelper(root);
-}
-
-template<class ValueType>
-void BTree<ValueType>::showHelper(BNode<ValueType>* node)
-{
-	for (int i = 0; i < node->nkeys; i++)
-	{
-		cout << node->key[i] << " : " << (node->value[i]) << ";" << endl;
-	}
-	if (!node->leaf)
-	{
-		for (int i = 0; i < node->nkeys; i++)
-		{
-			cout << endl << "go to leaf " << i << endl;
-			showHelper(node->child[i]);
-		}
-	}
-
-}
