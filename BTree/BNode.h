@@ -24,7 +24,7 @@ private:
 	void mergeNode(BNode<ValueType> * node, int index);
 	void moveNode(BNode<ValueType> * node, int index);
 
-	void traverse();
+	void traverse(int tab = 0);
 	ValueType search(int _key);
 
 	template <class ValueType>friend class BTree;
@@ -124,22 +124,23 @@ void BNode<ValueType>::splitNode(BNode<ValueType>* node, int index)
 }
 
 template <class ValueType>
-void BNode<ValueType>::traverse()
+void BNode<ValueType>::traverse(int tab)
 {
 	int i;
 	for (i = 0; i < nkeys; i++)
 	{
 		if (!leaf)
 		{
-			cout << endl << "go to child " << i;
-			child[i]->traverse();
+			child[i]->traverse(tab + 1);
 		}
-		cout << " | " << key[i] << ":" << value[i];
+		for (int j = 0; j < tab; j++) cout << "	";
+		cout << "[" << key[i] << "]:" << value[i];
+		cout << endl;
 	}
+
 	if (!leaf)
 	{
-		cout << endl << "go to child " << i;
-		child[i]->traverse();
+		child[i]->traverse(tab + 1);
 	}
 }
 
