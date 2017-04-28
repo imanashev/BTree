@@ -7,7 +7,7 @@ class BTree
 {
 private:
 	BNode<ValueType> * root;
-	static const int t = 3;
+	static const int t = 4;
 public:
 	BTree();
 	BTree(int _t);
@@ -15,9 +15,9 @@ public:
 
 	void insert(int key, ValueType& value);
 	void traverse();
-	bool search(int key, ValueType* _value);
+	bool search(int key, ValueType* _value = NULL);
 	bool erase(int key);
-	void showHelper(BNode<ValueType> * node);
+	//void showHelper(BNode<ValueType> * node);
 
 	template <class ValueType> friend class BNode;
 };
@@ -88,13 +88,50 @@ bool BTree<ValueType>::search(int key, ValueType* _value)
 	return 0;
 }
 
-//template<class ValueType>
-//ValueType BTree<ValueType>::erase(int key)
-//{
-//	if (root != NULL)
-//	{
-//		return root->erase(key);
-//	}
-//	return 0;
-//}
+
+//TODO erase from habr
+template<class ValueType>
+bool BTree<ValueType>::erase(int _key)
+{
+	if (root == NULL) //Дерево пусто
+	{
+		return 0;
+	}
+	BNode<ValueType>* parent = NULL;
+	BNode<ValueType>* cur = root;
+	int i;
+	while(true) // Поиск нужного элемента
+	{
+		i = 0;
+		while (i < cur->nkeys && _key > cur->key[i])
+		{
+			i++;
+		}
+		if (cur->key[i] == _key) //Ключ найден
+		{
+			break;
+		}
+		if (cur->leaf) // Ключ не найден
+		{
+			return 0;
+		}
+		parent = cur;
+		cur = cur->child[i];
+	}
+	if (cur->leaf)
+	{
+		if (cur->nkeys > t - 1) //Просто удаляем
+		{
+
+		}
+		else
+		{
+			if() // Есть соседний
+		}
+	}
+
+
+	return 1;
+}
+
 

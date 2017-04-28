@@ -154,7 +154,10 @@ bool BNode<ValueType>::search(int _key, ValueType* _value)
 	}
 	if (key[i] == _key)
 	{
-		*_value = value[i];
+		if (_value)
+		{
+			*_value = value[i];
+		}
 		return 1;
 	}
 	if (leaf)

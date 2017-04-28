@@ -33,27 +33,27 @@ void main()
 
 	while (getline(in, name))
 	{
-		Student* cur = new Student(name, 18 + rand() % 10, rand()* rand());
+		Student* cur = new Student(name, 17 + rand() % 10, rand()* rand());
 		int hash = std::hash<std::string>()(name) % 1500;
+		while (tree.search(hash)){
+			hash++;
+		}
 		tree.insert(hash, *cur);
 	}
 	tree.traverse();
+
 
 	cout << "Enter name for search :";
 	while (getline(std::cin, name))
 	{
 		int hash = std::hash<std::string>()(name) % 1500;
 		Student value;
-		tree.search(hash, &value);
+		do
+		{
+			tree.search(hash, &value);
+			hash++;
+		} while (value.name != name);
 		cout << value << endl;
 		cout << "Enter name for search :";
 	}
-	/*
-	for (int i = 0; i < 50; i++)
-	{
-	int j = rand() % 1000;
-	a = "stringa_" + to_string(j);
-	tree.insert(j, a);
-	}
-	*/
 }
