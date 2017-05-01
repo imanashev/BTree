@@ -1,59 +1,59 @@
 #pragma once
 #include "BTree.h"
 #include <cstdlib> 
-//#define  T BTree<ValueType>::t;
+//#define  T BTree<V>::t;
 
-template <class ValueType>
+template <class V>
 class BNode
 {
 private:
 	bool leaf;
 	int  nkeys;
 	int*  key;
-	ValueType *value;
-	BNode<ValueType> **child;
+	V *value;
+	BNode<V> **child;
 
 	BNode();
 	~BNode();
-	void insertNonfull(int _key, ValueType _value);
-	void splitNode(BNode<ValueType> * node, int index);
+	void insertNonfull(int _key, V _value);
+	void splitNode(BNode<V> * node, int index);
 
-	//ValueType eraseSrc(int _key);
-	//void erase(BNode<ValueType> * parent, int index);
+	//V eraseSrc(int _key);
+	//void erase(BNode<V> * parent, int index);
 
-	void mergeNode(BNode<ValueType> * node, int index);
-	void moveNode(BNode<ValueType> * node, int index);
+	void mergeNode(BNode<V> * node, int index);
+	void moveNode(BNode<V> * node, int index);
 
 	void traverse(int tab = 0);
-	bool search(int _key, ValueType* _value);
+	bool search(int _key, V* _value);
 
-	template <class ValueType>friend class BTree;
+	template <class V>friend class BTree;
 };
 
-template <class ValueType>
-BNode<ValueType>::BNode()
+template <class V>
+BNode<V>::BNode()
 {
 	leaf = true;
 	nkeys = 0;
-	//key = (int*)malloc(sizeof(int) * 2 * (BTree<ValueType>::t - 1));
-	//value = (ValueType**)malloc(sizeof(ValueType*) * 2 * (BTree<ValueType>::t - 1));
-	//child = (BNode<ValueType>**)malloc(sizeof(BNode<ValueType>*) * 2 * BTree<ValueType>::t);
+	//key = (int*)malloc(sizeof(int) * 2 * (BTree<V>::t - 1));
+	//value = (V**)malloc(sizeof(V*) * 2 * (BTree<V>::t - 1));
+	//child = (BNode<V>**)malloc(sizeof(BNode<V>*) * 2 * BTree<V>::t);
 
-	key = new int[2 * BTree<ValueType>::t - 1];
-	value = new ValueType [2 * BTree<ValueType>::t - 1];
-	child = new BNode<ValueType>* [2 * BTree<ValueType>::t];
+	key = new int[2 * BTree<V>::t - 1];
+	value = new V [2 * BTree<V>::t - 1];
+	child = new BNode<V>* [2 * BTree<V>::t];
 }
 
-template <class ValueType>
-BNode<ValueType>::~BNode()
+template <class V>
+BNode<V>::~BNode()
 {
 	//free(key);
 	//free(value);
 	//free(child);
 }
 
-template <class ValueType>
-void BNode<ValueType>::insertNonfull(int _key, ValueType _value)
+template <class V>
+void BNode<V>::insertNonfull(int _key, V _value)
 {
 	int i = nkeys - 1;
 	if (leaf)
@@ -75,7 +75,7 @@ void BNode<ValueType>::insertNonfull(int _key, ValueType _value)
 			i--;
 		}
 		i++;
-		if (child[i]->nkeys == 2 * BTree<ValueType>::t - 1)
+		if (child[i]->nkeys == 2 * BTree<V>::t - 1)
 		{
 			splitNode(child[i], i);
 			if (_key > key[i])
@@ -87,26 +87,26 @@ void BNode<ValueType>::insertNonfull(int _key, ValueType _value)
 	}
 }
 
-template <class ValueType>
-void BNode<ValueType>::splitNode(BNode<ValueType>* node, int index)
+template <class V>
+void BNode<V>::splitNode(BNode<V>* node, int index)
 {
 	int i;
-	BNode<ValueType> * z = new BNode<ValueType>;
+	BNode<V> * z = new BNode<V>;
 	z->leaf = node->leaf;
-	z->nkeys = BTree<ValueType>::t - 1;
-	for (i = 0; i < BTree<ValueType>::t - 1; i++)
+	z->nkeys = BTree<V>::t - 1;
+	for (i = 0; i < BTree<V>::t - 1; i++)
 	{
-		z->key[i] = node->key[BTree<ValueType>::t + i];
-		z->value[i] = node->value[BTree<ValueType>::t + i];
+		z->key[i] = node->key[BTree<V>::t + i];
+		z->value[i] = node->value[BTree<V>::t + i];
 	}
 	if (!node->leaf)
 	{
-		for (i = 0; i < BTree<ValueType>::t; i++)
+		for (i = 0; i < BTree<V>::t; i++)
 		{
-			z->child[i] = node->child[BTree<ValueType>::t + i];
+			z->child[i] = node->child[BTree<V>::t + i];
 		}
 	}
-	node->nkeys = BTree<ValueType>::t - 1;
+	node->nkeys = BTree<V>::t - 1;
 
 	for (i = nkeys; i >= index + 1; i--)
 	{
@@ -118,13 +118,13 @@ void BNode<ValueType>::splitNode(BNode<ValueType>* node, int index)
 		key[i + 1] = key[i];
 		value[i + 1] = value[i];
 	}
-	key[index] = node->key[BTree<ValueType>::t - 1];
-	value[index] = node->value[BTree<ValueType>::t - 1];
+	key[index] = node->key[BTree<V>::t - 1];
+	value[index] = node->value[BTree<V>::t - 1];
 	nkeys++;
 }
 
-template <class ValueType>
-void BNode<ValueType>::traverse(int tab)
+template <class V>
+void BNode<V>::traverse(int tab)
 {
 	int i;
 	for (i = 0; i < nkeys; i++)
@@ -144,8 +144,8 @@ void BNode<ValueType>::traverse(int tab)
 	}
 }
 
-template <class ValueType>
-bool BNode<ValueType>::search(int _key, ValueType* _value)
+template <class V>
+bool BNode<V>::search(int _key, V* _value)
 {
 	int i = 0;
 	while (i < nkeys && _key > key[i])
@@ -168,21 +168,21 @@ bool BNode<ValueType>::search(int _key, ValueType* _value)
 }
 
 
-//template<class ValueType>
-//void BNode<ValueType>::moveNode(BNode<ValueType>* parent, int index)
+//template<class V>
+//void BNode<V>::moveNode(BNode<V>* parent, int index)
 //{
-//	if (parent->child[index + 1] >= BTree<ValueType>::t)
+//	if (parent->child[index + 1] >= BTree<V>::t)
 //	{
 //
 //	}
-//	else if (parent->child[index - 1] >= BTree<ValueType>::t)
+//	else if (parent->child[index - 1] >= BTree<V>::t)
 //	{
 //
 //	}
 //}
 
-//template <class ValueType>
-//bool BNode<ValueType>::eraseSrc(int _key)
+//template <class V>
+//bool BNode<V>::eraseSrc(int _key)
 //{
 //	int i = 0;
 //	while (i < nkeys && _key > key[i])
@@ -201,12 +201,12 @@ bool BNode<ValueType>::search(int _key, ValueType* _value)
 //	return child[i]->erase(_key);
 //}
 //
-//template <class ValueType>
-//void BNode<ValueType>::erase(BNode<ValueType> * parent,int index)
+//template <class V>
+//void BNode<V>::erase(BNode<V> * parent,int index)
 //{
 //	if (leaf)
 //	{
-//		if (nkeys > BTree<ValueType>::t - 1)
+//		if (nkeys > BTree<V>::t - 1)
 //		{
 //			for (int i = index; i < nkeys - 1; i++)
 //			{
