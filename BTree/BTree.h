@@ -128,7 +128,6 @@ bool BTree<V>::erase(int _key)
 		if (node->nkeys > t - 1) //Ключей больше t-1: Просто удаляем
 		{
 			delete node->value[nodeNo];
-
 			for (int i = nodeNo; i < node->nkeys - 1; i++)
 			{
 				node->key[i] = node->key[i + 1];
@@ -139,8 +138,8 @@ bool BTree<V>::erase(int _key)
 		else // Ключей меньше t-1
 		{
 			bool first, last;
-			last = parentNo != parent->nkeys - 1;
-			first = parentNo != 0;
+			last = parentNo == parent->nkeys;
+			first = parentNo == 0;
 			BNode<V>* neighbor = NULL;
 
 			// Есть соседний c nkeys > t-1
@@ -204,7 +203,7 @@ bool BTree<V>::erase(int _key)
 					neighbor->nkeys--;
 				}
 			}
-			if (neighbor) // Все соседи по t-1 ключу
+			if (neighbor == NULL) // Все соседи по t-1 ключу
 			{
 				/* Если же все соседи нашего узла имеют по t-1 ключу.
 				То мы объединяем его с каким-либо соседом, удаляем нужный
@@ -212,19 +211,28 @@ bool BTree<V>::erase(int _key)
 				для этих двух «бывших» соседей, переместим в наш
 				новообразовавшийся узел (очевидно, он будет в нем медианой).
 				*/
-				if (parentNo == 0) // Объединяем с правым соседом
+
+				if (parentNo == parent->nkeys)
 				{
-					///TODO
+					parent->mergeRight(parentNo - 1);
 				}
-				else // Объединяем с левым соседом
+				else
 				{
-					///TODO
+					parent->mergeRight(parentNo);
 				}
+
+				delete newNode->value[nodeNo];
+				for (int i = nodeNo; i < node->nkeys - 1; i++)
+				{
+					node->key[i] = node->key[i + 1];						
+					node->value[i] = node->value[i + 1];
+				}
+				node->nkeys--;
 			}
 		}
 	}
-	else // Не лист
-	{
+	else // Не лист 
+	{///TODO
 		if () // Если дочерний узел, предшествующий ключу k содержит больше t-1 ключа
 		{
 			/* то находим k1 – предшественника k в поддереве этого узла. 

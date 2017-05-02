@@ -21,8 +21,7 @@ private:
 	//V eraseSrc(int _key);
 	//void erase(BNode<V> * parent, int index);
 
-	void mergeNode(BNode<V> * node, int index);
-	void moveNode(BNode<V> * node, int index);
+	bool mergeRight(int parentNo);
 
 	void traverse(int tab = 0);
 	bool search(int _key, V* _value);
@@ -167,6 +166,44 @@ bool BNode<V>::search(int _key, V* _value)
 	return child[i]->search(_key, _value);
 }
 
+template<class V>
+bool BNode<V>::mergeRight(int parentNo)
+{
+	if (!(this->leaf))
+	{
+		return 0;
+	}
+	BNode<V>* parent = this;
+	BNode<V>* newNode = parent->child[parentNo];
+	BNode<V>* oldNode = parent->child[parentNo + 1];
+
+	// Дописываем медиану
+	newNode->key[newNode->nkeys] = parent->key[parentNo];
+	newNode->value[newNode->nkeys] = parent->value[parentNo];
+	newNode->nkeys++;
+
+	// Дописываем соседа
+	for (int i = 0; i < oldNode->nkeys; i++)
+	{
+		newNode->key[newNode->nkeys + i] = oldNode->key[i];
+		newNode->value[newNode->nkeys + i] = oldNode->value[i];
+	}
+	newNode->nkeys += oldNode->nkeys;
+
+	// Изменяем родителя
+	for (int i = parentNo; i < parent->nkeys - 1; i++)
+	{
+		parent->key[i] = parent->key[i + 1];
+		parent->value[i] = parent->value[i + 1];
+		parent->child[i + 1] = parent->child[i + 2];
+	}
+	parent->nkeys--;
+	if (parent->nkeys == 0) // Если корень стал пустым
+	{
+		this* = newNode;
+	}
+	return 1;
+}
 
 //template<class V>
 //void BNode<V>::moveNode(BNode<V>* parent, int index)
