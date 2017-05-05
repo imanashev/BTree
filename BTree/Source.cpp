@@ -3,7 +3,10 @@
 #include <fstream>
 #include "BTree.h"
 #include <time.h>
+
 #define FILENAME "names.txt"
+#define HASH_TABLE_SIZE 1500
+
 
 using namespace std;
 
@@ -28,19 +31,19 @@ void main()
 {
 	std::ifstream in(FILENAME);
 	srand(time(NULL));
-	BTree<Student> tree;
+	BTree<Student> phoneBook;
 	string name;
 
-	while (getline(in, name))
+	while (getline(in, name)) // Заполнение дерева
 	{
 		Student* cur = new Student(name, 17 + rand() % 10, rand()* rand());
-		int hash = std::hash<std::string>()(name) % 1500;
-		while (tree.search(hash)){
-			hash++;
+		int hash = std::hash<std::string>()(name) % HASH_TABLE_SIZE;
+		while (phoneBook.search(hash)){
+			hash = hash + 1 % HASH_TABLE_SIZE;
 		}
-		tree.insert(hash, *cur);
+		phoneBook.insert(hash, cur);
 	}
-	tree.traverse();
+	phoneBook.traverse();
 
 
 	cout << "Enter name for search :";
@@ -48,12 +51,21 @@ void main()
 	{
 		int hash = std::hash<std::string>()(name) % 1500;
 		Student value;
+		int i = 0; // Счетчик попыток поиска
 		do
 		{
-			tree.search(hash, &value);
-			hash++;
-		} while (value.name != name);
-		cout << value << endl;
+			phoneBook.search(hash, &value);
+			hash = hash + 1 % HASH_TABLE_SIZE;
+			i++;
+		} while (value.name != name && i < 5);
+		if (i < 5)
+		{
+			cout << value << endl;
+		}
+		else
+		{
+			cout << "Not found" << endl;
+		}
 		cout << "Enter name for search :";
 	}
 }

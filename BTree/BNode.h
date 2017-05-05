@@ -10,12 +10,14 @@ private:
 	bool leaf;
 	int  nkeys;
 	int*  key;
-	V *value;
+	V **value;
 	BNode<V> **child;
+
 protected:
 	BNode();
 	~BNode();
-	void insertNonfull(int _key, V _value);
+
+	void insertNonfull(int _key, V* _value);
 	void splitNode(BNode<V> * node, int idx);
 
 	void traverse(int tab = 0);
@@ -44,20 +46,13 @@ BNode<V>::BNode()
 	//child = (BNode<V>**)malloc(sizeof(BNode<V>*) * 2 * BTree<V>::t);
 
 	key = new int[2 * BTree<V>::t - 1];
-	value = new V [2 * BTree<V>::t - 1];
+	value = new V* [2 * BTree<V>::t - 1];
 	child = new BNode<V>* [2 * BTree<V>::t];
 }
 
-template <class V>
-BNode<V>::~BNode()
-{
-	//free(key);
-	//free(value);
-	//free(child);
-}
 
 template <class V>
-void BNode<V>::insertNonfull(int _key, V _value)
+void BNode<V>::insertNonfull(int _key, V* _value)
 {
 	int i = nkeys - 1;
 	if (leaf)
@@ -138,7 +133,7 @@ void BNode<V>::traverse(int tab)
 			child[i]->traverse(tab + 1);
 		}
 		for (int j = 0; j < tab; j++) cout << "	";
-		cout << "[" << key[i] << "]:" << value[i];
+		cout << "[" << key[i] << "]:" << *value[i];
 		cout << endl;
 	}
 
@@ -160,7 +155,7 @@ bool BNode<V>::search(int _key, V* _value)
 	{
 		if (_value)
 		{
-			*_value = value[i];
+			*_value = *value[i];
 		}
 		return 1;
 	}

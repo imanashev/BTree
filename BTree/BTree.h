@@ -13,7 +13,7 @@ public:
 	BTree(int _t);
 	static int getT();
 
-	void insert(int key, V& value);
+	void insert(int key, V* value);
 	void traverse();
 	bool search(int key, V* _value = NULL);
 
@@ -36,7 +36,7 @@ int BTree<V>::getT()
 };
 
 template<class V>
-void BTree<V>::insert(int key, V& value)
+void BTree<V>::insert(int key, V* value)
 {
 	if (root == NULL)
 	{
