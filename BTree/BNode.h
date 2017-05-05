@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "BTree.h"
 #include <cstdlib> 
 //#define  T BTree<V>::t;
@@ -12,19 +12,24 @@ private:
 	int*  key;
 	V *value;
 	BNode<V> **child;
-
+protected:
 	BNode();
 	~BNode();
 	void insertNonfull(int _key, V _value);
-	void splitNode(BNode<V> * node, int index);
-
-	//V eraseSrc(int _key);
-	//void erase(BNode<V> * parent, int index);
-
-	bool mergeRight(int parentNo);
+	void splitNode(BNode<V> * node, int idx);
 
 	void traverse(int tab = 0);
 	bool search(int _key, V* _value);
+
+	bool remove(int key);
+	bool removeFromLeaf(int idx);
+	bool removeFromNonLeaf(int idx);
+	int getPred(int idx);
+	int getSucc(int idx);
+	void fill(int idx);
+	void borrowFromPrev(int idx);
+	void borrowFromNext(int idx);
+	void merge(int idx);
 
 	template <class V>friend class BTree;
 };
@@ -87,7 +92,7 @@ void BNode<V>::insertNonfull(int _key, V _value)
 }
 
 template <class V>
-void BNode<V>::splitNode(BNode<V>* node, int index)
+void BNode<V>::splitNode(BNode<V>* node, int idx)
 {
 	int i;
 	BNode<V> * z = new BNode<V>;
@@ -107,18 +112,18 @@ void BNode<V>::splitNode(BNode<V>* node, int index)
 	}
 	node->nkeys = BTree<V>::t - 1;
 
-	for (i = nkeys; i >= index + 1; i--)
+	for (i = nkeys; i >= idx + 1; i--)
 	{
 		child[i + 1] = child[i];
 	}
-	child[index + 1] = z;
-	for (i = nkeys - 1; i >= index; i--)
+	child[idx + 1] = z;
+	for (i = nkeys - 1; i >= idx; i--)
 	{
 		key[i + 1] = key[i];
 		value[i + 1] = value[i];
 	}
-	key[index] = node->key[BTree<V>::t - 1];
-	value[index] = node->value[BTree<V>::t - 1];
+	key[idx] = node->key[BTree<V>::t - 1];
+	value[idx] = node->value[BTree<V>::t - 1];
 	nkeys++;
 }
 
@@ -167,100 +172,40 @@ bool BNode<V>::search(int _key, V* _value)
 }
 
 template<class V>
-bool BNode<V>::mergeRight(int parentNo)
+void BNode<V>::merge(int idx)
 {
-	if (!(this->leaf))
-	{
-		return 0;
-	}
-	BNode<V>* parent = this;
-	BNode<V>* newNode = parent->child[parentNo];
-	BNode<V>* oldNode = parent->child[parentNo + 1];
+	BNode<V>* newNode = parent->child[idx];
+	BNode<V>* oldNode = parent->child[idx + 1];
 
-	// Дописываем медиану
-	newNode->key[newNode->nkeys] = parent->key[parentNo];
-	newNode->value[newNode->nkeys] = parent->value[parentNo];
+	// Р”РѕРїРёСЃС‹РІР°РµРј РјРµРґРёР°РЅСѓ
+	newNode->key[newNode->nkeys] = parent->key[idx];
+	newNode->value[newNode->nkeys] = parent->value[idx];
 	newNode->nkeys++;
 
-	// Дописываем соседа
+	// Р”РѕРїРёСЃС‹РІР°РµРј СЃРѕСЃРµРґР°
 	for (int i = 0; i < oldNode->nkeys; i++)
 	{
 		newNode->key[newNode->nkeys + i] = oldNode->key[i];
 		newNode->value[newNode->nkeys + i] = oldNode->value[i];
 	}
+	if (!newNode->leaf)
+	{
+		for (int i = 0; i <= oldNode->nkeys; i++)
+		{
+			newNode->child[newNode->nkeys + i] = oldNode->child[i];
+		}
+	}
 	newNode->nkeys += oldNode->nkeys;
 
-	// Изменяем родителя
-	for (int i = parentNo; i < parent->nkeys - 1; i++)
+	// РР·РјРµРЅСЏРµРј СЂРѕРґРёС‚РµР»СЏ
+	for (int i = idx + 1; i < nkeys; i++)
 	{
-		parent->key[i] = parent->key[i + 1];
-		parent->value[i] = parent->value[i + 1];
-		parent->child[i + 1] = parent->child[i + 2];
+		key[i - 1] = key[i];
+		value[i - 1] = value[i];
 	}
-	parent->nkeys--;
-	if (parent->nkeys == 0) // Если корень стал пустым
+	for (int i = idx + 2; i <= nkeys; i++)
 	{
-		this* = newNode;
+		child[i - 1] = child[i];
 	}
-	return 1;
+	nkeys--;
 }
-
-//template<class V>
-//void BNode<V>::moveNode(BNode<V>* parent, int index)
-//{
-//	if (parent->child[index + 1] >= BTree<V>::t)
-//	{
-//
-//	}
-//	else if (parent->child[index - 1] >= BTree<V>::t)
-//	{
-//
-//	}
-//}
-
-//template <class V>
-//bool BNode<V>::eraseSrc(int _key)
-//{
-//	int i = 0;
-//	while (i < nkeys && _key > key[i])
-//	{
-//		i++;
-//	}
-//	if (key[i] == _key)
-//	{
-//		erase();
-//		return 1 
-//	}
-//	if (leaf)
-//	{
-//		return 0;
-//	}
-//	return child[i]->erase(_key);
-//}
-//
-//template <class V>
-//void BNode<V>::erase(BNode<V> * parent,int index)
-//{
-//	if (leaf)
-//	{
-//		if (nkeys > BTree<V>::t - 1)
-//		{
-//			for (int i = index; i < nkeys - 1; i++)
-//			{
-//				key[i] = key[i + 1];
-//				value[i] = value[i + 1];
-//			}
-//			nkeys--;
-//		}
-//		else
-//		{
-//
-//		}
-//	}
-//	else
-//	{
-//
-//	}
-//
-//
-//}
