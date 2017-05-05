@@ -89,8 +89,33 @@ bool BTree<V>::search(int key, V* _value)
 	return 0;
 }
 
+template<class V>
+bool BTree<V>::remove(int key)
+{
+	if (root == NULL) //Дерево пусто
+	{
+		return 0;
+	}
 
-//TODO erase from habr
+	bool result = root->remove(key);
+
+	if (root->nkeys == 0) // Корень стал пустым
+	{
+		BTree<V> *tmp = root;
+		if (root->leaf)
+		{
+			root = NULL;
+		}
+		else
+		{
+			root = root->child[0];
+		}
+		delete tmp;
+	}
+	return result;
+}
+
+
 //template<class V>
 //bool BTree<V>::erase(int _key)
 //{
@@ -260,30 +285,3 @@ bool BTree<V>::search(int key, V* _value)
 //
 //	return 1;
 //}
-//
-//template<class V>
-//bool BTree<V>::remove(int key)
-//{
-//	if (root == NULL) //Дерево пусто
-//	{
-//		return 0;
-//	}
-//
-//	bool result = root->remove(key);
-//
-//	if (root->nkeys == 0)
-//	{
-//		BTree<V> *tmp = root;
-//		if (root->leaf)
-//		{
-//			root = NULL;
-//		}
-//		else
-//		{
-//			root = root->child[0];
-//		}
-//		delete tmp;
-//	}
-//	return result;
-//}
-//

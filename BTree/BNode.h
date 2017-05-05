@@ -23,7 +23,7 @@ protected:
 	void traverse(int tab = 0);
 	bool search(int _key, V* _value);
 
-	/*bool remove(int key);
+	bool remove(int key);
 	bool removeFromLeaf(int idx);
 	bool removeFromNonLeaf(int idx);
 	int getPred(int idx);
@@ -31,7 +31,7 @@ protected:
 	void fill(int idx);
 	void borrowFromPrev(int idx);
 	void borrowFromNext(int idx);
-	void merge(int idx);*/
+	void merge(int idx);
 
 	template <class V>friend class BTree;
 };
@@ -41,10 +41,7 @@ BNode<V>::BNode()
 {
 	leaf = true;
 	nkeys = 0;
-	//key = (int*)malloc(sizeof(int) * 2 * (BTree<V>::t - 1));
-	//value = (V**)malloc(sizeof(V*) * 2 * (BTree<V>::t - 1));
-	//child = (BNode<V>**)malloc(sizeof(BNode<V>*) * 2 * BTree<V>::t);
-
+	
 	key = new int[2 * BTree<V>::t - 1];
 	value = new V* [2 * BTree<V>::t - 1];
 	child = new BNode<V>* [2 * BTree<V>::t];
@@ -166,43 +163,53 @@ bool BNode<V>::search(int _key, V* _value)
 	return child[i]->search(_key, _value);
 }
 
-//template<class V>
-//void BNode<V>::merge(int idx)
-//{
-//	BNode<V>* newNode = parent->child[idx];
-//	BNode<V>* oldNode = parent->child[idx + 1];
-//
-//	// Дописываем медиану
-//	newNode->key[newNode->nkeys] = parent->key[idx];
-//	newNode->value[newNode->nkeys] = parent->value[idx];
-//	newNode->nkeys++;
-//
-//	// Дописываем соседа
-//	for (int i = 0; i < oldNode->nkeys; i++)
-//	{
-//		newNode->key[newNode->nkeys + i] = oldNode->key[i];
-//		newNode->value[newNode->nkeys + i] = oldNode->value[i];
-//	}
-//	if (!newNode->leaf)
-//	{
-//		for (int i = 0; i <= oldNode->nkeys; i++)
-//		{
-//			newNode->child[newNode->nkeys + i] = oldNode->child[i];
-//		}
-//	}
-//	newNode->nkeys += oldNode->nkeys;
-//
-//	// Изменяем родителя
-//	for (int i = idx + 1; i < nkeys; i++)
-//	{
-//		key[i - 1] = key[i];
-//		value[i - 1] = value[i];
-//	}
-//	for (int i = idx + 2; i <= nkeys; i++)
-//	{
-//		child[i - 1] = child[i];
-//	}
-//	nkeys--;
-//}
-//
-//
+//TODO
+template<class V>
+void BNode<V>::borrowFromNext(int idx)
+{
+	BNode<V>* child = child[idx];
+	BNode<V>* sibling = child[idx + 1];
+
+	
+}
+
+template<class V>
+void BNode<V>::merge(int idx)
+{
+	BNode<V>* newNode = parent->child[idx];
+	BNode<V>* oldNode = parent->child[idx + 1];
+
+	// Дописываем медиану
+	newNode->key[newNode->nkeys] = parent->key[idx];
+	newNode->value[newNode->nkeys] = parent->value[idx];
+	newNode->nkeys++;
+
+	// Дописываем соседа
+	for (int i = 0; i < oldNode->nkeys; i++)
+	{
+		newNode->key[newNode->nkeys + i] = oldNode->key[i];
+		newNode->value[newNode->nkeys + i] = oldNode->value[i];
+	}
+	if (!newNode->leaf)
+	{
+		for (int i = 0; i <= oldNode->nkeys; i++)
+		{
+			newNode->child[newNode->nkeys + i] = oldNode->child[i];
+		}
+	}
+	newNode->nkeys += oldNode->nkeys;
+
+	// Изменяем родителя
+	for (int i = idx + 1; i < nkeys; i++)
+	{
+		key[i - 1] = key[i];
+		value[i - 1] = value[i];
+	}
+	for (int i = idx + 2; i <= nkeys; i++)
+	{
+		child[i - 1] = child[i];
+	}
+	nkeys--;
+}
+
+
