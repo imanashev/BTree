@@ -92,16 +92,16 @@ bool BTree<V>::search(int key, V* _value)
 template<class V>
 bool BTree<V>::remove(int key)
 {
-	if (root == NULL) //Дерево пусто
+	if (!root) //Дерево пусто
 	{
-		return 0;
+		return false;
 	}
 
 	bool result = root->remove(key);
 
 	if (root->nkeys == 0) // Корень стал пустым
 	{
-		BTree<V> *tmp = root;
+		BNode<V> *tmp = root;
 		if (root->leaf)
 		{
 			root = NULL;
@@ -114,6 +114,7 @@ bool BTree<V>::remove(int key)
 	}
 	return result;
 }
+
 
 
 //template<class V>

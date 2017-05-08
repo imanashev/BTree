@@ -61,6 +61,9 @@ void main()
 		if (i < 5)
 		{
 			cout << value << endl;
+			phoneBook.remove(hash - 1 % HASH_TABLE_SIZE);
+			cout << endl << endl << endl;
+			phoneBook.traverse();
 		}
 		else
 		{
