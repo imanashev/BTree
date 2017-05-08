@@ -5,20 +5,23 @@
 template <class V>
 class BNode
 {
+	template <class V>friend class BTree;
+	typedef void(*FunctionType)(V& anitem);
 private:
 	bool leaf;
 	int  nkeys;
 	int*  key;
 	V **value;
 	BNode<V> **child;
-
+	
 	BNode();
-//	~BNode();
+	~BNode();
 
 	void insertNonfull(int _key, V* _value);
 	void splitNode(BNode<V> * node, int idx);
 
-	void traverse(int tab = 0);
+	void traverse(FunctionType visit);
+	void print(int tab = 0);
 	bool search(int _key, V* _value);
 
 	bool remove(int _key);
@@ -29,8 +32,6 @@ private:
 	void borrowFromPrev(int idx);
 	void borrowFromNext(int idx);
 	void merge(int idx);
-
-	template <class V>friend class BTree;
 };
 
 template <class V>
@@ -44,11 +45,13 @@ BNode<V>::BNode()
 	child = new BNode<V>* [2 * BTree<V>::t];
 }
 
-//template <class V>
-//BNode<V>::~BNode()
-//{
-//
-//}
+template <class V>
+BNode<V>::~BNode()
+{
+	free(key);
+	free(value);
+	free(child);
+}
 
 
 
@@ -126,14 +129,33 @@ void BNode<V>::splitNode(BNode<V>* node, int idx)
 
 
 template <class V>
-void BNode<V>::traverse(int tab)
+void BNode<V>::traverse(FunctionType visit)
 {
 	int i;
 	for (i = 0; i < nkeys; i++)
 	{
 		if (!leaf)
 		{
-			child[i]->traverse(tab + 1);
+			child[i]->traverse(visit);
+		}
+		visit(*value[i]);
+	}
+
+	if (!leaf)
+	{
+		child[i]->traverse(visit);
+	}
+}
+
+template <class V>
+void BNode<V>::print(int tab)
+{
+	int i;
+	for (i = 0; i < nkeys; i++)
+	{
+		if (!leaf)
+		{
+			child[i]->print(tab + 1);
 		}
 		for (int j = 0; j < tab; j++) cout << "	";
 		cout << "[" << key[i] << "]:" << *value[i];
@@ -142,7 +164,7 @@ void BNode<V>::traverse(int tab)
 
 	if (!leaf)
 	{
-		child[i]->traverse(tab + 1);
+		child[i]->print(tab + 1);
 	}
 }
 
@@ -418,5 +440,5 @@ void BNode<V>::merge(int idx)
 		child[i - 1] = child[i];
 	}
 	nkeys--;
-	//delete oldNode;
+	delete oldNode;
 }

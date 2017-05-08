@@ -5,9 +5,11 @@
 template <class V>
 class BTree
 {
+	template <class V> friend class BNode;
+	typedef void(*FunctionType)(V& anitem);
 private:
 	BNode<V> * root;
-	static const int t;// = 4;
+	static const int t;
 public:
 	BTree();
 	BTree(int _t);
@@ -16,10 +18,9 @@ public:
 	void insert(int key, V* value);
 	bool remove(int key);
 
-	void traverse();
+	void traverse(FunctionType visit);
+	void print();
 	bool search(int key, V* _value = NULL);
-
-	template <class V> friend class BNode;
 };
 
 template<class V>
@@ -96,11 +97,20 @@ bool BTree<V>::remove(int key)
 }
 
 template<class V>
-void BTree<V>::traverse()
+void BTree<V>::traverse(FunctionType visit)
 {
 	if (root != NULL)
 	{
-		root->traverse();
+		root->traverse(visit);
+	}
+}
+
+template<class V>
+void BTree<V>::print()
+{
+	if (root != NULL)
+	{
+		root->print();
 	}
 }
 

@@ -4,7 +4,6 @@
 #include "BTree.h"
 #include <time.h>
 class Student;
-
 using namespace std;
 
 #define FILENAME "names.txt"
@@ -28,6 +27,11 @@ ostream& operator<<(ostream& os, const Student& student)
 	return os;
 }
 
+void printName(Student& student)
+{
+	cout << student.name << endl;
+}
+
 void main()
 {
 	std::ifstream in(FILENAME);
@@ -47,40 +51,44 @@ void main()
 	}
 
 	//Вывод дерева
-	phoneBook.traverse();
+	phoneBook.print();
 
 
-	// Поиск в дереве
-	//cout << "Enter name for search :";
-	//while (getline(std::cin, name))
-	//{
-	//	int hash = std::hash<std::string>()(name) % 1500;
-	//	Student value;
-	//	int i = 0; // Счетчик попыток поиска
-	//	do
-	//	{
-	//		phoneBook.search(hash, &value);
-	//		hash = hash + 1 % HASH_TABLE_SIZE;
-	//		i++;
-	//	} while (value.name != name && i < 5);
-	//	if (i < 5)
-	//	{
-	//		cout << value << endl;
-	//	}
-	//	else
-	//	{
-	//		cout << "Not found" << endl;
-	//	}
-	//	cout << "Enter name for search :";
-	//}
+	//Поиск в дереве
+	cout << "Enter name for search :";
+	while (getline(std::cin, name))
+	{
+		int hash = std::hash<std::string>()(name) % 1500;
+		Student value;
+		int i = 0; // Счетчик попыток поиска
+		do
+		{
+			phoneBook.search(hash, &value);
+			hash = hash + 1 % HASH_TABLE_SIZE;
+			i++;
+		} while (value.name != name && i < 5);
+		if (i < 5)
+		{
+			cout << value << endl;
+		}
+		else
+		{
+			cout << "Not found" << endl;
+		}
+		cout << "Enter name for search :";
+	}
 
 	//Удаление дерева
-	for (int i = 0; i < HASH_TABLE_SIZE/2; i++)
-	{
-		if(phoneBook.remove(i))
-		{
-			cout << "deleted " << i << endl;
-		}
-	}
-	phoneBook.traverse();
+	//for (int i = 0; i < HASH_TABLE_SIZE; i++)
+	//{
+	//	if(phoneBook.remove(i))
+	//	{
+	//		cout << "deleted " << i << endl;
+	//	}
+	//}
+	//phoneBook.print();
+
+	// Обход дерева с выполнением функции
+	//phoneBook.traverse(printName);
+
 }
