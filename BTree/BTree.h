@@ -7,18 +7,17 @@ class BTree
 {
 private:
 	BNode<V> * root;
-	static const int t = 4;
+	static const int t;// = 4;
 public:
 	BTree();
 	BTree(int _t);
-	static int getT();
+	int getT();
 
 	void insert(int key, V* value);
+	bool remove(int key);
+
 	void traverse();
 	bool search(int key, V* _value = NULL);
-
-	bool erase(int key);
-	bool remove(int key);
 
 	template <class V> friend class BNode;
 };
@@ -30,10 +29,10 @@ template<class V>
 inline BTree<V>::BTree(int _t) : t(_t), root(NULL) {};
 
 template <class V>
-int BTree<V>::getT()
+inline int BTree<V>::getT()
 {
 	return t;
-};
+}
 
 template<class V>
 void BTree<V>::insert(int key, V* value)
@@ -71,25 +70,6 @@ void BTree<V>::insert(int key, V* value)
 }
 
 template<class V>
-void BTree<V>::traverse()
-{
-	if (root != NULL)
-	{
-		root->traverse();
-	}
-}
-
-template<class V>
-bool BTree<V>::search(int key, V* _value)
-{
-	if (root != NULL)
-	{
-		return root->search(key , _value);
-	}
-	return 0;
-}
-
-template<class V>
 bool BTree<V>::remove(int key)
 {
 	if (!root) //Дерево пусто
@@ -114,6 +94,26 @@ bool BTree<V>::remove(int key)
 	}
 	return result;
 }
+
+template<class V>
+void BTree<V>::traverse()
+{
+	if (root != NULL)
+	{
+		root->traverse();
+	}
+}
+
+template<class V>
+bool BTree<V>::search(int key, V* _value)
+{
+	if (root != NULL)
+	{
+		return root->search(key , _value);
+	}
+	return 0;
+}
+
 
 
 

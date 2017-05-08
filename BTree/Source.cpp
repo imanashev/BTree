@@ -3,12 +3,13 @@
 #include <fstream>
 #include "BTree.h"
 #include <time.h>
+class Student;
+
+using namespace std;
 
 #define FILENAME "names.txt"
 #define HASH_TABLE_SIZE 1500
-
-
-using namespace std;
+const int BTree<Student>::t = 4;
 
 class Student
 {
@@ -21,9 +22,9 @@ public:
 	friend ostream& operator<<(ostream& os, const Student& st);
 };
 
-ostream& operator<<(ostream& os, const Student& st)
+ostream& operator<<(ostream& os, const Student& student)
 {
-	os << "Name: " << st.name << ", Age: " << st.age << ", Phone: +" << st.phone;
+	os << "Name: " << student.name << ", Age: " << student.age << ", Phone: +" << student.phone;
 	return os;
 }
 
@@ -34,7 +35,8 @@ void main()
 	BTree<Student> phoneBook;
 	string name;
 
-	while (getline(in, name)) // Заполнение дерева
+	// Заполнение дерева
+	while (getline(in, name)) 
 	{
 		Student* cur = new Student(name, 17 + rand() % 10, rand()* rand());
 		int hash = std::hash<std::string>()(name) % HASH_TABLE_SIZE;
@@ -43,32 +45,42 @@ void main()
 		}
 		phoneBook.insert(hash, cur);
 	}
+
+	//Вывод дерева
 	phoneBook.traverse();
 
 
-	cout << "Enter name for search :";
-	while (getline(std::cin, name))
+	// Поиск в дереве
+	//cout << "Enter name for search :";
+	//while (getline(std::cin, name))
+	//{
+	//	int hash = std::hash<std::string>()(name) % 1500;
+	//	Student value;
+	//	int i = 0; // Счетчик попыток поиска
+	//	do
+	//	{
+	//		phoneBook.search(hash, &value);
+	//		hash = hash + 1 % HASH_TABLE_SIZE;
+	//		i++;
+	//	} while (value.name != name && i < 5);
+	//	if (i < 5)
+	//	{
+	//		cout << value << endl;
+	//	}
+	//	else
+	//	{
+	//		cout << "Not found" << endl;
+	//	}
+	//	cout << "Enter name for search :";
+	//}
+
+	//Удаление дерева
+	for (int i = 0; i < HASH_TABLE_SIZE/2; i++)
 	{
-		int hash = std::hash<std::string>()(name) % 1500;
-		Student value;
-		int i = 0; // Счетчик попыток поиска
-		do
+		if(phoneBook.remove(i))
 		{
-			phoneBook.search(hash, &value);
-			hash = hash + 1 % HASH_TABLE_SIZE;
-			i++;
-		} while (value.name != name && i < 5);
-		if (i < 5)
-		{
-			cout << value << endl;
-			phoneBook.remove(hash - 1 % HASH_TABLE_SIZE);
-			cout << endl << endl << endl;
-			phoneBook.traverse();
+			cout << "deleted " << i << endl;
 		}
-		else
-		{
-			cout << "Not found" << endl;
-		}
-		cout << "Enter name for search :";
 	}
+	phoneBook.traverse();
 }

@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "BTree.h"
 #include <cstdlib> 
-//#define  T BTree<V>::t;
 
 template <class V>
 class BNode
@@ -13,9 +12,8 @@ private:
 	V **value;
 	BNode<V> **child;
 
-protected:
 	BNode();
-	~BNode();
+//	~BNode();
 
 	void insertNonfull(int _key, V* _value);
 	void splitNode(BNode<V> * node, int idx);
@@ -23,12 +21,10 @@ protected:
 	void traverse(int tab = 0);
 	bool search(int _key, V* _value);
 
-	int findKey(int _key);
 	bool remove(int _key);
 	bool removeFromLeaf(int idx);
 	bool removeFromNonLeaf(int idx);
-	void getPred(int idx, int* _key, V* _value);
-	void getSucc(int idx, int* _key, V* _value);
+	int findKey(int _key);
 	void fill(int idx);
 	void borrowFromPrev(int idx);
 	void borrowFromNext(int idx);
@@ -47,6 +43,13 @@ BNode<V>::BNode()
 	value = new V* [2 * BTree<V>::t - 1];
 	child = new BNode<V>* [2 * BTree<V>::t];
 }
+
+//template <class V>
+//BNode<V>::~BNode()
+//{
+//
+//}
+
 
 
 template <class V>
@@ -120,6 +123,8 @@ void BNode<V>::splitNode(BNode<V>* node, int idx)
 	nkeys++;
 }
 
+
+
 template <class V>
 void BNode<V>::traverse(int tab)
 {
@@ -159,20 +164,12 @@ bool BNode<V>::search(int _key, V* _value)
 	}
 	if (leaf)
 	{
-		return 0;
+		return false;
 	}
 	return child[i]->search(_key, _value);
 }
 
-//TODO
-template<class V>
-int BNode<V>::findKey(int _key)
-{
-	int idx = 0;
-	while (idx < nkeys && key[idx] < _key)
-		++idx;
-	return idx;
-}
+
 
 template<class V>
 bool BNode<V>::remove(int _key)
@@ -218,6 +215,10 @@ bool BNode<V>::remove(int _key)
 template<class V>
 bool BNode<V>::removeFromLeaf(int idx)
 {
+	if (value[idx] != NULL)
+	{
+		delete value[idx];
+	}
 	for (int i = idx + 1; i < nkeys; i++)
 	{
 		key[i - 1] = key[i];
@@ -227,7 +228,6 @@ bool BNode<V>::removeFromLeaf(int idx)
 	return true;
 }
 
-//TODO
 template<class V>
 bool BNode<V>::removeFromNonLeaf(int idx)
 {
@@ -236,21 +236,31 @@ bool BNode<V>::removeFromNonLeaf(int idx)
 
 	if (child[idx]->nkeys >= BTree<V>::t)
 	{
-		int k;
-		V v;
-		getPred(idx, &k, &v);
-		key[idx] = k;
-		value[idx] = &v;
+		BNode<V> *cur = child[idx];
+
+		while (!cur->leaf)
+		{
+			cur = cur->child[cur->nkeys];
+		}
+		key[idx] = cur->key[cur->nkeys - 1];
+		value[idx] = cur->value[cur->nkeys - 1];
+		cur->value[cur->nkeys - 1] = NULL;
+
 		return child[idx]->remove(key[idx]);
 	}
 
 	else if (child[idx + 1]->nkeys >= BTree<V>::t)
 	{
-		int k;
-		V v;
-		getSucc(idx, &k, &v);
-		key[idx] = k;
-		value[idx] = &v;
+		BNode<V> *cur = child[idx + 1];
+
+		while (!cur->leaf)
+		{
+			cur = cur->child[0];
+		}
+		key[idx] = cur->key[0];
+		value[idx] = cur->value[0];
+		cur->value[0] = NULL;
+
 		return child[idx + 1]->remove(key[idx]);
 	}
 
@@ -262,34 +272,17 @@ bool BNode<V>::removeFromNonLeaf(int idx)
 
 }
 
-//TODO
+
+
 template<class V>
-void BNode<V>::getPred(int idx, int* _key, V* _value)
+int BNode<V>::findKey(int _key)
 {
-	BNode<V> *cur = child[idx];
-
-	while (!cur->leaf)
+	int idx = 0;
+	while (idx < nkeys && key[idx] < _key)
 	{
-		cur = cur->child[cur->nkeys];
+		idx++;
 	}
-
-	_key = cur->key[cur->nkeys - 1];
-	_value = cur->value[cur->nkeys - 1]
-}
-
-//TODO
-template<class V>
-void BNode<V>::getSucc(int idx, int* _key, V* _value)
-{
-	BNode<V> *cur = child[idx + 1];
-
-	while (!cur->leaf)
-	{
-		cur = cur->child[0];
-	}
-	
-	_key = cur->key[0];
-	_value = cur->value[0];
+	return idx;
 }
 
 template<class V>
@@ -339,6 +332,7 @@ void BNode<V>::borrowFromPrev(int idx)
 	}
 
 	node->key[0] = key[idx - 1];
+	node->value[0] = value[idx - 1];
 
 	if (!leaf)
 	{
@@ -363,7 +357,7 @@ void BNode<V>::borrowFromNext(int idx)
 
 	if (!(node->leaf))
 	{
-		node->child[(node->n) + 1] = sibling->child[0];
+		node->child[(node->nkeys) + 1] = sibling->child[0];
 	}
 
 	key[idx] = sibling->key[0];
@@ -377,7 +371,7 @@ void BNode<V>::borrowFromNext(int idx)
 
 	if (!sibling->leaf)
 	{
-		for (int i = 1; i <= sibling->n; ++i)
+		for (int i = 1; i <= sibling->nkeys; ++i)
 		{
 			sibling->child[i - 1] = sibling->child[i];
 		}
@@ -390,25 +384,25 @@ void BNode<V>::borrowFromNext(int idx)
 template<class V>
 void BNode<V>::merge(int idx)
 {
-	BNode<V>* newNode = parent->child[idx];
-	BNode<V>* oldNode = parent->child[idx + 1];
+	BNode<V>* newNode = child[idx];
+	BNode<V>* oldNode = child[idx + 1];
 
 	// Дописываем медиану
-	newNode->key[newNode->nkeys] = parent->key[idx];
-	newNode->value[newNode->nkeys] = parent->value[idx];
+	newNode->key[BTree<V>::t - 1] = key[idx];
+	newNode->value[BTree<V>::t - 1] = value[idx];
 	newNode->nkeys++;
 
 	// Дописываем соседа
 	for (int i = 0; i < oldNode->nkeys; i++)
 	{
-		newNode->key[newNode->nkeys + i] = oldNode->key[i];
-		newNode->value[newNode->nkeys + i] = oldNode->value[i];
+		newNode->key[BTree<V>::t + i] = oldNode->key[i];
+		newNode->value[BTree<V>::t + i] = oldNode->value[i];
 	}
 	if (!newNode->leaf)
 	{
 		for (int i = 0; i <= oldNode->nkeys; i++)
 		{
-			newNode->child[newNode->nkeys + i] = oldNode->child[i];
+			newNode->child[BTree<V>::t + i] = oldNode->child[i];
 		}
 	}
 	newNode->nkeys += oldNode->nkeys;
@@ -424,4 +418,5 @@ void BNode<V>::merge(int idx)
 		child[i - 1] = child[i];
 	}
 	nkeys--;
+	//delete oldNode;
 }
