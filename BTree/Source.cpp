@@ -92,3 +92,58 @@ void main()
 	//phoneBook.traverse(printName);
 
 }
+
+/*
+//Новые объявления, желательно переделать как тут
+template <class V>
+class BTree
+{
+	typedef void(*FunctionType)(V& anitem);
+private:
+	BNode<V> * root;
+	const int t_;
+
+public:
+	BTree();
+	BTree(int _t);
+	int getT();
+
+	void insert(int key, V* value);
+	bool remove(int key);
+	void traverse(FunctionType visit);
+	void print();
+	bool search(int key, V* _value = NULL);
+
+protected:
+	void traverseHelper(BNode<V>* node, FunctionType visit);
+	void printHelper(BNode<V>* node, int tab = 0);
+	bool searchHelper(BNode<V>* node, int _key, V* _value);
+	bool removeHelper(BNode<V>* node, int _key);
+	bool removeFromNonLeaf(BNode<V>* node, int idx);
+	void fill(BNode<V>* node, int idx);
+	void borrowFromPrev(BNode<V>* node, int idx);
+	void borrowFromNext(BNode<V>* node, int idx);
+	void merge(BNode<V>* node, int idx);
+};
+
+template <class V>
+class BNode
+{
+	template <class V>friend class BTree;
+private:
+	bool leaf;
+	int  nkeys;
+	int*  key;
+	V **value;
+	BNode<V> **child;
+
+	BNode(const int t);
+	~BNode();
+
+	void insertNonfull(int _key, V* _value, const int t)
+		void splitNode(BNode<V> * node, int idx, const int t);
+	bool removeFromLeaf(int idx, const int t);
+	int findKey(int _key, const int t);
+
+};
+*/
